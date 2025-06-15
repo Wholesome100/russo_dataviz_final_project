@@ -1,0 +1,388 @@
+---
+title: "Mini-Project 02"
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+    toc_float: true
+---
+
+# Data Visualization Project 02
+
+# Data Summaries (Report starts in Visualizations)
+
+```{r, message = FALSE}
+# Cell to read in CSV
+library(tidyverse)
+
+fifa <- read_csv("../data/fifa18.csv")
+fifa
+```
+
+```{r, message=FALSE}
+summary(fifa)
+```
+
+```{r, message=FALSE}
+# Summarize number of players per country
+player_counts_country <- fifa %>%
+  group_by(nationality) %>%
+  summarize(players = n())
+
+player_counts_country
+```
+
+```{r, message=FALSE}
+# Need to map and group countries according to their CIA World Factbook name
+country_mapping <- c(
+  "Wales" = "United Kingdom",
+  "England" = "United Kingdom",
+  "Northern Ireland" = "United Kingdom",
+  "Scotland" = "United Kingdom",
+  "Republic of Ireland" = "Ireland",
+  "Bosnia Herzegovina" = "Bosnia and Herzegovina",
+  "Ivory Coast" = "Côte d'Ivoire",
+  "Korea Republic" = "South Korea",
+  "Korea DPR" = "North Korea",
+  "DR Congo" = "Democratic Republic of the Congo",
+  "Congo" = "Republic of the Congo",
+  "Cape Verde" = "Cabo Verde",
+  "FYR Macedonia" = "North Macedonia",
+  "Guinea Bissau" = "Guinea-Bissau",
+  "Curacao" = "Curaçao",
+  "Gambia" = "The Gambia",
+  "Trinidad & Tobago" = "Trinidad and Tobago",
+  "Central African Rep." = "Central African Republic",
+  "St Kitts Nevis" = "Saint Kitts and Nevis",
+  "China PR" = "China",
+  "Antigua & Barbuda" = "Antigua and Barbuda",
+  "São Tomé & Príncipe" = "Sao Tome and Principe",
+  "Swaziland" = "Eswatini",
+  "St Lucia" = "Saint Lucia",
+  "Brunei Darussalam" = "Brunei"
+)
+
+player_counts_country <- player_counts_country %>%
+  mutate(nationality_fixed = recode(nationality, !!!country_mapping, .default = nationality))
+
+player_counts_country
+```
+
+```{r, message=FALSE}
+# Summarize player counts by nationality_fixed and display top countries
+summary_by_fixed_nationality <- player_counts_country %>%
+  group_by(nationality_fixed) %>%
+  summarize(total_players = sum(players, na.rm = TRUE)) %>%
+  arrange(desc(total_players))
+
+print(summary_by_fixed_nationality)
+```
+
+```{r, message = FALSE}
+# Visualization to see clubs that may have a higher potential than their average rating
+# Most clubs have like ~20-30 players so size isn't too crucial
+
+# Get club-level data stats
+club_summary <- fifa %>%
+  filter(!is.na(club)) %>% # Exclude players with no club affiliation
+  group_by(club) %>%
+  summarize(
+    avg_overall = mean(overall),
+    avg_potential = mean(potential),
+    avg_age = mean(age),
+    num_players = n())
+
+club_summary
+```
+
+```{r, message=FALSE}
+# Get top 10 clubs by average overall rating
+top_10_clubs <- club_summary %>%
+  arrange(desc(avg_overall)) %>%
+  head(10)
+
+fifa_top_10_clubs <- fifa %>%
+  filter(club %in% top_10_clubs$club) %>%
+  mutate(club = factor(club, levels = top_10_clubs$club))
+
+fifa_top_10_clubs
+```
+
+
+```{r, message=FALSE}
+# Get bottom 10 clubs by average overall rating
+bottom_10_clubs <- club_summary %>%
+  arrange(avg_overall) %>%
+  head(10)
+
+fifa_bottom_10_clubs <- fifa %>%
+  filter(club %in% bottom_10_clubs$club) %>%
+  mutate(club = factor(club, levels = bottom_10_clubs$club))
+
+fifa_bottom_10_clubs
+```
+
+
+```{r, message=FALSE}
+# The corrplot library seemed better than ggplot for plotting correlograms
+library(corrplot)
+
+# Select numeric, relevant attributes
+# Wanted to do more but correlogram became hard to read
+stats_for_corr <- fifa %>% 
+  select(
+    overall,
+    # Key Mental & Skill Attributes
+    reactions, composure, ball_control, dribbling, 
+    short_passing, long_passing, vision, 
+    # Key Attacking Attributes
+    finishing, shot_power,
+    # Key Physical Attributes
+    sprint_speed, stamina, strength,
+    # Key Defensive Attributes
+    interceptions, standing_tackle
+  )
+
+# Calculate the correlation matrix
+cor_matrix <- cor(stats_for_corr)
+
+cor_matrix
+```
+
+
+# Data Visualization
+
+
+> Soccer!!! I-I mean, football!!!
+
+Saying soccer in some parts of the world might get you whisked away by a mob of angry fans, but for the purposes of this report, we will fly in the face of said angry fans and continue to call the game soccer. Soccer, as it relates to this report, is the focus of the fifa18.csv dataset, which contains a list of roughly 17,000 players and their stats from the game of the same name (FIFA 18). Some of these stats correlate to the player's real world counterparts, such as nationality or club, while others are more game specific such as sprint_speed or ball_control.
+
+Soccer, as with almost any sport, is a vessel for two of (almost) everyone's favorite things: nationalism, and winning. As such, in the context of FIFA 18, let's say we want to win. Before we want to win, let's see what nationalities possess the greatest number of players, to determine if we could build out an all-American dream team.
+
+## Spatial Visualization
+
+Below is a choropleth graph of the world, with countries colored by the number of players that belong to that nation:
+
+```{r load-libraries-data, warning = FALSE, message = FALSE}
+library(sf)
+# Load world shapefile from Natural Earth
+# https://www.naturalearthdata.com/downloads/110m-cultural-vectors/
+world_shapes <- read_sf("../data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+```
+
+```{r, message=FALSE}
+# Join our players with their fixed nationality names on the CIAWF names
+world_players <- left_join(world_shapes, summary_by_fixed_nationality, by = c("NAME_CIAWF" = "nationality_fixed"))
+```
+
+```{r, message=FALSE}
+# Spatial visualization for player nationality
+# There were some issues joining the tables together, countries like Barbados that exist in the FIFA set but not the shapefile are not listed
+# Thankfully the issues only impacted smaller countries with a smaller number of players
+
+ggplot() +
+  geom_sf(data = world_players, aes(
+    fill = total_players
+  )) +
+  coord_sf(crs = "+proj=natearth2") +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Countries with Highest Count of FIFA Players",
+    subtitle = "Gray Countries are Not Represented",
+    caption = "Sourced from: fifa18.csv",
+    fill = "# of Players"
+  ) + theme_void()
+
+```
+
+A couple things to note about the above graph. Countries that are listed in gray either had no players belonging to them in the FIFA dataset, or were missing from the shapefile that was used. One example that comes to mind is Barbados, as it has 1 player in the FIFA dataset, but does not appear in the shapefile. Additionally, I strove to ensure that all countries were properly represented, but one challenge I had with this graph was effectively mapping the nationalities from the fifa dataset to the countries as they appeared in the shapefile. There were no ISO_A3 codes like in the assignment with the shapefile, so the compromise I struck was joining the dataset based on the country names as they appeared in the CIA world factbook (NAME_CIAWF). I created mappings for the countries in the data summaries to help them line up with their CIA name, and joining them together gave the resulting visualization.
+
+For the graph itself, we can see far and away that Great Britain has the greatest proportion of Fifa players. Other countries of note are Germany, Spain, France, Argentina, and Brazil. Unfortunately for us, while there appears to be a modest amount of American Fifa players, they are dwarfed by the sheer number of players from Europe and South America. So, most likely, while we can still build an American dream team, our selection of players may be more limited than if we embraced globalism and opted for a multinational mix of players.
+
+## Interactive Visualization
+
+Forget nationalism, what we want (as with any sport) is to win, and while there are a lot of players in this dataset, one way we can visualize where the best players are is by breaking down the clubs they belong to. The visualization below is interactive, and displays each club based on the average of its overall rating, vs the average of its overall potential.
+
+```{r, message = FALSE}
+# Interactive plot where we can see clubs with their average overall rating vs potential rating
+p_club <- ggplot(club_summary, 
+             aes(x = avg_overall, 
+                 y = avg_potential, 
+                 color = avg_age,
+                 size = num_players,
+                 text = paste("Club:", club,
+                              "<br>Avg Overall:", round(avg_overall, 1),
+                              "<br>Avg Potential:", round(avg_potential, 1),
+                              "<br>Avg Age:", round(avg_age, 1),
+                              "<br>Players:", num_players))) +
+  geom_point(alpha = 0.7) +
+  scale_color_viridis_c() +
+  scale_size_continuous(range = c(0.5, 2)) +
+  labs(
+    title = "Club Average Overall Rating vs. Average Potential",
+    subtitle = "Sized by Number of Players, Colored by Average Age",
+    caption = "Sourced from: fifa18.csv",
+    x = "Average Overall Rating",
+    y = "Average Potential Rating",
+    color = "Avg. Age",
+    size = "# of Players"
+  ) +
+  theme_minimal()
+
+# Convert ggplot object to a plotly object and store it
+interactive_club_plot <- plotly::ggplotly(p_club, tooltip = "text")
+
+interactive_club_plot
+
+# Save the plot as a self-contained HTML file in the same directory as the .rmd
+htmlwidgets::saveWidget(interactive_club_plot, file = "interactive_club_plot.html", selfcontained = TRUE)
+
+```
+
+Overall rating in this sense determines how "valuable" a player is, while "potential" represents what their future rating (potential) may be. From this graph, we can see a couple interesting things. Firstly, look at the bands that form from coloring by age. It seems that teams that are younger tend to have higher potential ratings, while older teams tend to have lower potential ratings, which does make some sense. Rookies still have room to grow and improve over older players who may be hitting physical or skill walls. Granted, some older clubs like Juventus have a higher overall rating than all of the younger clubs.
+
+Keep in mind that as a game (with a need to make money) Fifa 18 most likely makes it harder to get players from highly rated clubs onto your team, as if it were possible, then everyone would have a team stacked with people from Juventus, FC Barcelona, and Real Madrid CF. It's for this reason we can't just examine straight player stats, as we aren't guaranteed to get the specific player we want. It's a better bet to focus at the club level, so we can have a wider pool of players to choose from.
+
+It's for this reason that we might want to see if there are any clubs that "buck the trend" by having a much higher potential than their overall rating. A couple that come to mind are Crewe Alexandria, Sevilla Athletico, and FC Barcelona B, as they have a potential score well above their average overall rating. However, even at their max potential Crewe Alexandria still isn't performing well, plus as a smaller team, their potential could be greatly skewed by one player. Sevilla Athletico seems like a better bet, as FC Barcelona B seems like the B-Team for the highly rated FC Barcelona team (and it's players might be rarer by extension).
+
+Going back to the bit about players in Fifa, let's take a look at the top 10 clubs by average to see what the distribution of their players looks like, to determine if any teams are being "carried" by a standout player.
+
+```{r, message=FALSE}
+# Visualize distribution of overall player rating in the top 10 and bottom 10 clubs
+
+# Boxplot for top 10 clubs
+ggplot(fifa_top_10_clubs, aes(x = club, y = overall)) +
+  geom_boxplot(fill = "salmon") +
+  annotate(geom = "rect",
+           xmin = 0, xmax = 10,
+           ymin = 90, ymax = 95,
+           fill = "pink",
+           alpha = 0.2) +
+  annotate(geom = "text",
+           x = 13, y = 80,
+           label = "")+
+  annotate(geom = "label",
+           x = 12, y = 75,
+           label = "Soccer superstars like Messi and Ronaldo can be found in here!") +
+  annotate(geom = "segment",
+           x = 11.5, xend = 10,
+           y = 85, yend = 90,
+           arrow =  arrow(
+             length = unit(0.1, "in")
+           )) +
+  coord_flip() +
+  labs(
+    title = "Distribution of Overall Player Ratings in Top 10 Clubs",
+    subtitle = "Clubs ordered by average overall rating (highest first)",
+    x = "",
+    y = "Overall Player Rating"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8))
+```
+
+We can see from the boxplot that while some clubs do have upper ranges in the 90+ rating, the clubs with the highest averages have tighter distributions, with almost all clubs in this visualization having a median rating somewhere within the ~80-85 range. Note the annotation, some clubs like FC Barcelona may have players like Messi that appear as outliers. The case could be made that these clubs are being carried by star players, but other clubs like Real Madrid CF have Ronaldo, and more generally 90+ rating appears to be the range in which soccer superstars (players generally known outside of their domain, e.g. Lebron James) fall into.
+
+To recap, better clubs will have a tighter distribution around their median, with some or no outliers. The median rating for the top clubs is around ~80 rating.
+
+```{r, message=FALSE}
+# Boxplot for bottom 10 clubs
+ggplot(fifa_bottom_10_clubs, aes(x = club, y = overall)) +
+  geom_boxplot(fill = "skyblue") +
+  coord_flip() +
+  labs(
+    title = "Distribution of Overall Player Ratings in Bottom 10 Clubs",
+    subtitle = "Clubs ordered by average overall rating (lowest first)",
+    x = "",
+    y = "Overall Player Rating"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 8))
+```
+
+In the bottom 10 clubs, we see that most medians fall somewhere between 55-60 overall rating, with some outliers and ranges ending up around 65 rating. Remember Crewe Alexandra from earlier? It appears there are some players on that team skewing the distribution (has the lowest median but upper part extends into the 65+ rating), potentially explaining the higher potential rating compared to its overall rating. The same intuition from the highest rated clubs applies here, we want a club with a tighter distribution around its median and few outliers, and ideally we want to carry these insights into a club with ideally, a higher median overall player rating. Granted, as these are the lowest rated clubs, these players are probably more common to come by in game, and we could look at taking the higher end picks from Bohemian FC, Finn Harps, and Crewe Alexandra.
+
+OK, so now that we have a general idea of what to look for in a club (younger players, good average score with a tight distribution), what should we look for in a player? The correlogram below serves to answer that question, showing the correlation between some of the most important player stats (visualization may need zooming-in on smaller screens).
+
+```{r, message = FALSE, fig.width = 12}
+# Correlogram of player statistics
+# Harder to see on smaller screens, goal kick stats omitted to save space
+
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
+         addCoef.col = "black",
+         tl.col = "black", tl.srt = 45,
+         tl.cex = 0.7,
+         number.cex = 0.6,
+         diag = FALSE,
+         title = "Correlation Plot of Key Player Attributes",
+         mar = c(0,0,1,0)
+         )
+```
+
+While the correlogram doesn't seem to illuminate any breathtaking negative or general correlations, it does provide important information for players that we want to fill a specific role. For example, I can expect a player with a high standing_tackle value to also have a high interception value, and as such I would want to put him a role that can maximize those stats. We can also see some very strong correlations between certain skills like ball_control and dribbling, or overall and reactions, but the general trend here is that almost all stats are positively correlated with each other to some degree, with the main exception being strength, which is weakly positive or negligible across all stats.
+
+## Visualization of a Model
+
+For the final portion of this mini project, let's build a linear model to predict a player's overall rating and age based on a set of predictors, and then visualize the results.
+
+```{r model_visualization, message = FALSE, warning = FALSE}
+# Build out two lm() models, one to predict overall rating and one to predict age
+library(broom)
+
+overall_model <- lm(overall ~ age + potential + reactions + ball_control + composure, data = fifa)
+overall_model_df <- tidy(overall_model, conf.int = TRUE) %>% filter(term != "(Intercept)")
+
+overall_model_df
+```
+
+```{r, message=FALSE}
+age_model <- lm(age ~ overall + potential + reactions + ball_control + composure, data = fifa)
+age_model_df <- tidy(age_model, conf.int = TRUE) %>% filter(term != "(Intercept)")
+
+age_model_df
+```
+
+```{r, message=FALSE}
+# Visualize the coefficients
+
+ggplot(overall_model_df, aes(x = estimate, y = fct_reorder(term, estimate))) +
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high), color = "black", size = 0.6, fatten = 3) +
+  geom_vline(xintercept = 0, color = "salmon", linetype = "dashed") +
+  labs(
+    title = "Linear Model Coefficients for Predicting Overall Player Rating",
+    subtitle = "Predictors: Age, Potential, Reactions, Ball Control, Composure",
+    x = "Coefficient Estimate",
+    y = ""
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Based on the model, we can see that overall rating is moderately, positively related with age and potential, meaning that overall rating increases as a player's age and potential rating increases. This makes sense, younger players get more experience as they get older, and are able to act on their potential rating. Reactions are moderately related with overall, meaning that players who can react better to game events will have a higher overall rating, while composure and ball control don't seem to have a significant bearing on overall rating.
+
+```{r, message=FALSE}
+
+ggplot(age_model_df, aes(x = estimate, y = fct_reorder(term, estimate))) +
+  geom_pointrange(aes(xmin = conf.low, xmax = conf.high), color = "black", size = 0.6, fatten = 3) +
+  geom_vline(xintercept = 0, color = "salmon", linetype = "dashed") +
+  labs(
+    title = "Linear Model Coefficients for Predicting Player Age",
+    subtitle = "Predictors: Overall, Potential, Reactions, Ball Control, Composure",
+    x = "Coefficient Estimate",
+    y = ""
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+With age, we see an interesting reversal compared to the previous model. When predicting age, overall rating increases alongside it, while potential decreases drastically. Again, older players will have more experience and a higher overall rating, but as they age their potential to grow will wane over time. Composure and ball_control don't appear to have a significant bearing on age, while reactions has less bearing on age than it did in the previous graph for overall score.
+
+# Report Wrapup
+
+At the end of the day, if we want to win Fifa games, we need to pick a multinational coalition of players, focusing on clubs with higher average overall and potential ratings, younger players, and tighter distributions. In this way, we could ideally build a good team out of the players that are given to us by the game, as higher rated players are more rare at a baseline, and we are not guaranteed to have them on our team. The correlogram provided can help determine what stats we want to look for in certain positions, and the linear models reinforce the notion that while older players will have a higher rating, younger players will have a higher potential, and should be factored in when building out a team.
+
+Originally the graphs I wanted to make were a choropleth graph for the spatial visualization, a correlogram for the different variables, and an interactive scatterplot. I used the player nationalities to make the choropleth graph by showing where most Fifa players in the dataset hailed from. I used ggplotly for the scatterplot of average club overall rating vs potential rating, which turned out well as the points were a bit dense at some points. It allows for a deeper dive into specific clubs and can be used to find sleeper clubs that might be easier to recruit from in game. I also made a couple boxplots showing the player overall score distribution for the top and bottom 10 teams. The correlogram was something I was interested in from the last project, so I included it using a library called corrplot to make it easier to include. To visualize the model, I referred to using a coefficients plot from the slides to visualize linear models predicting overall rating and age.
+
+The story I told with my plots was how to build a Fifa team that could win within the bounds of what the game provided. The general gist was to look for a team with a multinational background, prioritizing younger teams with higher average overall ratings, and tighter player overall rating distributions within them.
+
+I applied the principles of data visualization and design by opting to keep the theme across my project consistent using theme_minimal, and by keeping the colors across certain graphs consistent with either viridis or some variant of red-blue (salmon-skyblue). For the graphs themselves, I strove to emphasize the data points without introducing unnecessary components such as using `theme_void()` for the choropleth graph. I made the graph I knew would be one of the most cluttered (ratings scatterplot) interactive to make it easier to go through, and I used an annotated graph to bring attention to some figures that people not invested in soccer may know of, such as Lionel Messi or Cristiano Ronaldo. I also used broom to help me refine the outputs of my `lm()` models, and I used an additional library `corrplot` to help me create a correlogram that shows the correlation between many player stats to help nail down what we might want to look for in a player.
