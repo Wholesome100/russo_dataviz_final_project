@@ -64,7 +64,21 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
 
 ```{r mimic-plot-b}
-
+ggplot(weather_tpa, aes(
+  x = max_temp
+)) +
+  geom_density(
+    bw = 0.5,
+    kernel = "epanechnikov",
+    fill = "darkgray",
+    linewidth = 1
+    
+  ) +
+  labs(
+    x = "Maximum Temperatures",
+    y = "Density"
+  ) + 
+  theme_bw()
 ```
 
 
@@ -75,6 +89,11 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 ```
 
 Hint: default options for `geom_density()` were used. 
+
+```{r mimic-plot-c}
+
+```
+
 
 (d) Generate a plot like the chart below:
 
