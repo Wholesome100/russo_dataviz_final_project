@@ -34,6 +34,25 @@ Using the 2022 data:
 knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/tpa_max_temps_facet.png")
 ```
 
+```{r}
+tpa_dated <- weather_tpa %>% 
+  mutate(month_name = month(make_date(year = 2022, month = month), label = TRUE, abbr = FALSE))
+```
+
+
+```{r mimic-plot-a}
+ggplot(tpa_dated, aes(
+  x = max_temp,
+  fill = month_name
+)) +
+  geom_histogram(binwidth = 3, show.legend = FALSE) +
+  labs(x = "Maximum Temperatures",
+       y = "Number of Days") +
+  scale_fill_viridis_d() +
+  facet_wrap(~ month_name) +
+  theme_bw()
+```
+
 Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
 
 (b) Create a plot like the one below:
@@ -43,6 +62,11 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 ```
 
 Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
+
+```{r mimic-plot-b}
+
+```
+
 
 (c) Create a plot like the one below:
 
