@@ -115,9 +115,26 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 
 Hint: use the`{ggridges}` package, and the `geom_density_ridges()` function paying close attention to the `quantile_lines` and `quantiles` parameters. The plot above uses the `plasma` option (color scale) for the _viridis_ palette.
 
+```{r mimic-plot-d}
+ggplot(tpa_dated, aes(
+  x = max_temp,
+  y = month_name,
+  fill = max_temp
+)) +
+  ggridges::geom_density_ridges() +
+  labs(
+    y = "",
+    x = "Maximum Temperature (in Farenheit Degrees)"
+  )
+
+```
+
 
 (e) Create a plot of your choice that uses the attribute for precipitation _(values of -99.9 for temperature or -99.99 for precipitation represent missing data)_.
 
+```{r precipitation-plot-e}
+
+```
 
 
 ## PART 2 
