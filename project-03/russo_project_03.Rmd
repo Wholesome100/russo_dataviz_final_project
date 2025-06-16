@@ -138,8 +138,31 @@ ggplot(tpa_dated, aes(
 
 (e) Create a plot of your choice that uses the attribute for precipitation _(values of -99.9 for temperature or -99.99 for precipitation represent missing data)_.
 
-```{r precipitation-plot-e}
+```{r}
+# Get rid of any missing precipitation data
+tpa_precip <- tpa_dated %>% 
+  filter(precipitation != -99.99)
 
+tpa_precip
+```
+
+
+```{r precipitation-plot-e}
+ggplot(tpa_precip, aes(
+
+  x = month_name,
+  y = precipitation
+)) +
+  geom_bar(  
+  stat = "identity",
+  fill = "steelblue") +
+  labs(
+    title = "Total Precipitation by Month in 2022",
+    x = "",
+    y = "Precipitation (Inches)"
+  ) +
+  theme_bw() +
+  coord_flip()
 ```
 
 

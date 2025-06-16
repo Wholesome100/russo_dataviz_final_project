@@ -29,10 +29,10 @@ sample_n(weather_tpa, 4)
 ## # A tibble: 4 × 7
 ##    year month   day precipitation max_temp min_temp ave_temp
 ##   <dbl> <dbl> <dbl>         <dbl>    <dbl>    <dbl>    <dbl>
-## 1  2022     2    12       0.00001       80       55     67.5
-## 2  2022     8    12       0             92       80     86  
-## 3  2022     2    16       0             84       59     71.5
-## 4  2022     5     2       0             87       71     79
+## 1  2022    12    31          0.29       71       66     68.5
+## 2  2022     7    29          0          97       82     89.5
+## 3  2022    12    12          0          76       59     67.5
+## 4  2022    10    20          0          73       49     61
 ```
 
 See Slides from Week 4 of Visualizing Relationships and Models (slide 10) for a reminder on how to use this type of dataset with the `lubridate` package for dates and times (example included in the slides uses data from 2016).
@@ -159,6 +159,52 @@ ggplot(tpa_dated, aes(
 (e) Create a plot of your choice that uses the attribute for precipitation _(values of -99.9 for temperature or -99.99 for precipitation represent missing data)_.
 
 
+``` r
+# Get rid of any missing precipitation data
+tpa_precip <- tpa_dated %>% 
+  filter(precipitation != -99.99)
+
+tpa_precip
+```
+
+```
+## # A tibble: 365 × 8
+##     year month   day precipitation max_temp min_temp ave_temp month_name
+##    <dbl> <dbl> <dbl>         <dbl>    <dbl>    <dbl>    <dbl> <ord>     
+##  1  2022     1     1       0             82       67     74.5 January   
+##  2  2022     1     2       0             82       71     76.5 January   
+##  3  2022     1     3       0.02          75       55     65   January   
+##  4  2022     1     4       0             76       50     63   January   
+##  5  2022     1     5       0             75       59     67   January   
+##  6  2022     1     6       0.00001       74       56     65   January   
+##  7  2022     1     7       0.00001       81       63     72   January   
+##  8  2022     1     8       0             81       58     69.5 January   
+##  9  2022     1     9       0             84       65     74.5 January   
+## 10  2022     1    10       0             81       64     72.5 January   
+## # ℹ 355 more rows
+```
+
+
+
+``` r
+ggplot(tpa_precip, aes(
+
+  x = month_name,
+  y = precipitation
+)) +
+  geom_bar(  
+  stat = "identity",
+  fill = "steelblue") +
+  labs(
+    title = "Total Precipitation by Month in 2022",
+    x = "",
+    y = "Precipitation (Inches)"
+  ) +
+  theme_bw() +
+  coord_flip()
+```
+
+![](russo_project_03_files/figure-html/precipitation-plot-e-1.png)<!-- -->
 
 
 ## PART 2 
