@@ -64,7 +64,7 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
 
 ```{r mimic-plot-b}
-ggplot(weather_tpa, aes(
+ggplot(tpa_dated, aes(
   x = max_temp
 )) +
   geom_density(
@@ -91,7 +91,18 @@ knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_f
 Hint: default options for `geom_density()` were used. 
 
 ```{r mimic-plot-c}
-
+ggplot(tpa_dated, aes(
+  x = max_temp,
+  fill = month_name
+)) +
+  geom_density(linewidth = 1, show.legend = FALSE) +
+  labs(
+    title = "Density Plots for Each Month in 2022",
+    x = "Maximum Temperatures",
+    y = ""
+  ) +
+  facet_wrap(~ month_name) +
+  theme_bw()
 ```
 
 
