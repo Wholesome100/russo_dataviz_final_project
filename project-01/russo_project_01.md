@@ -131,13 +131,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name                artist_name   mode  valence energy
-##   <chr>                     <chr>         <chr>   <dbl>  <dbl>
-## 1 Sweet Caroline            Neil Diamond  major   0.527  0.127
-## 2 Watch Me (Whip / Nae Nae) Silentó       major   0.965  0.77 
-## 3 Grease                    Frankie Valli major   0.871  0.372
-## 4 I Got You Babe            Sonny & Cher  major   0.619  0.696
-## 5 Born To Be Wild           Steppenwolf   major   0.533  0.737
+##   track_name        artist_name        mode  valence energy
+##   <chr>             <chr>              <chr>   <dbl>  <dbl>
+## 1 Umbrella          Rihanna            major   0.551  0.821
+## 2 I Kissed a Girl   Katy Perry         major   0.696  0.76 
+## 3 Heart And Soul    T'Pau              major   0.57   0.656
+## 4 Hey There Delilah Plain White T's    major   0.313  0.293
+## 5 Emotional Rescue  The Rolling Stones major   0.8    0.616
 ```
 
 ``` r
@@ -151,13 +151,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name                  artist_name      mode  valence energy
-##   <chr>                       <chr>            <chr>   <dbl>  <dbl>
-## 1 Who's That Girl             Madonna          minor   0.826  0.646
-## 2 Sunny                       Bobby Hebb       minor   0.661  0.347
-## 3 Do You Know (What It Takes) Robyn            minor   0.857  0.74 
-## 4 Find Your Love              Drake            minor   0.822  0.598
-## 5 Maniac                      Michael Sembello minor   0.731  0.704
+##   track_name              artist_name        mode  valence energy
+##   <chr>                   <chr>              <chr>   <dbl>  <dbl>
+## 1 Alone Again (Naturally) Gilbert O'Sullivan minor   0.559  0.464
+## 2 Viva La Vida            Coldplay           minor   0.416  0.619
+## 3 Bootylicious            Destiny's Child    minor   0.637  0.835
+## 4 Rock Your Baby          George McCrae      minor   0.943  0.659
+## 5 Crush                   Jennifer Paige     minor   0.626  0.693
 ```
 
 

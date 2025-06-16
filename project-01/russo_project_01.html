@@ -1596,13 +1596,13 @@ summer_songs %&gt;%
   slice_sample(n = 5, replace = TRUE) %&gt;% 
   print()</code></pre>
 <pre><code>## # A tibble: 5 × 5
-##   track_name                artist_name   mode  valence energy
-##   &lt;chr&gt;                     &lt;chr&gt;         &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1 Sweet Caroline            Neil Diamond  major   0.527  0.127
-## 2 Watch Me (Whip / Nae Nae) Silentó       major   0.965  0.77 
-## 3 Grease                    Frankie Valli major   0.871  0.372
-## 4 I Got You Babe            Sonny &amp; Cher  major   0.619  0.696
-## 5 Born To Be Wild           Steppenwolf   major   0.533  0.737</code></pre>
+##   track_name        artist_name        mode  valence energy
+##   &lt;chr&gt;             &lt;chr&gt;              &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Umbrella          Rihanna            major   0.551  0.821
+## 2 I Kissed a Girl   Katy Perry         major   0.696  0.76 
+## 3 Heart And Soul    T&#39;Pau              major   0.57   0.656
+## 4 Hey There Delilah Plain White T&#39;s    major   0.313  0.293
+## 5 Emotional Rescue  The Rolling Stones major   0.8    0.616</code></pre>
 <pre class="r"><code># Example Songs in a Minor Key
 summer_songs %&gt;%
   filter(mode == &quot;minor&quot;) %&gt;% 
@@ -1610,13 +1610,13 @@ summer_songs %&gt;%
   slice_sample(n = 5, replace = TRUE) %&gt;% 
   print()</code></pre>
 <pre><code>## # A tibble: 5 × 5
-##   track_name                  artist_name      mode  valence energy
-##   &lt;chr&gt;                       &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1 Who&#39;s That Girl             Madonna          minor   0.826  0.646
-## 2 Sunny                       Bobby Hebb       minor   0.661  0.347
-## 3 Do You Know (What It Takes) Robyn            minor   0.857  0.74 
-## 4 Find Your Love              Drake            minor   0.822  0.598
-## 5 Maniac                      Michael Sembello minor   0.731  0.704</code></pre>
+##   track_name              artist_name        mode  valence energy
+##   &lt;chr&gt;                   &lt;chr&gt;              &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Alone Again (Naturally) Gilbert O&#39;Sullivan minor   0.559  0.464
+## 2 Viva La Vida            Coldplay           minor   0.416  0.619
+## 3 Bootylicious            Destiny&#39;s Child    minor   0.637  0.835
+## 4 Rock Your Baby          George McCrae      minor   0.943  0.659
+## 5 Crush                   Jennifer Paige     minor   0.626  0.693</code></pre>
 <pre class="r"><code># Songs get louder each year
 cor(summer_songs$loudness, summer_songs$year)</code></pre>
 <pre><code>## [1] 0.5286474</code></pre>
