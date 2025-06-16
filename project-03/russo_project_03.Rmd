@@ -88,6 +88,12 @@ ggplot(tpa_dated, aes(
 knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/tpa_max_temps_density_facet.png")
 ```
 
+```{r}
+# Cell to check the weirdness with July's density plot
+#tpa_dated %>% filter(tpa_dated$month_name == "July")
+```
+
+
 Hint: default options for `geom_density()` were used. 
 
 ```{r mimic-plot-c}
@@ -188,6 +194,29 @@ Make sure to include a copy of the dataset in the `data/` folder, and reference 
 
 (to get the "raw" data from any of the links listed above, simply click on the `raw` button of the GitHub page and copy the URL to be able to read it in your computer using the `read_csv()` function)
 
+```{r read-top100-lyrics}
+# Probably more interesting to look at text visualization for the final project
+# I'm going to look at the billboard top 100 lyrics
+
+# Wordcloud, interactive sentiment analysis scatterplot, and bigram frequency would probably be cool
+
+top_lyrics <- read_csv("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/data/BB_top100_2015.csv")
+
+top_lyrics
+```
+
+```{r top100-word-cloud}
+
+```
+
+```{r top100-bigram-frequency}
+
+```
+
+```{r top100-sentiment-interactive}
+
+```
+
 
 ### Option (B): Data on Concrete Strength 
 
@@ -221,6 +250,8 @@ new_concrete <- concrete %>%
   mutate(strength_range = cut(Concrete_compressive_strength, 
                               breaks = quantile(Concrete_compressive_strength, 
                                                 probs = seq(0, 1, 0.2))) )
+
+new_concrete 
 ```
 
 
