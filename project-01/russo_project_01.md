@@ -131,13 +131,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name        artist_name        mode  valence energy
-##   <chr>             <chr>              <chr>   <dbl>  <dbl>
-## 1 Umbrella          Rihanna            major   0.551  0.821
-## 2 I Kissed a Girl   Katy Perry         major   0.696  0.76 
-## 3 Heart And Soul    T'Pau              major   0.57   0.656
-## 4 Hey There Delilah Plain White T's    major   0.313  0.293
-## 5 Emotional Rescue  The Rolling Stones major   0.8    0.616
+##   track_name                                 artist_name    mode  valence energy
+##   <chr>                                      <chr>          <chr>   <dbl>  <dbl>
+## 1 If You Don't Know Me By Now                Simply Red     major   0.213  0.371
+## 2 Poor Little Fool                           Ricky Nelson   major   0.795  0.332
+## 3 I Still Haven't Found What I'm Looking For U2             major   0.587  0.783
+## 4 Buy U a Drank (Shawty Snappin')            T-Pain         major   0.594  0.55 
+## 5 Crystal Blue Persuasion                    Tommy James &… major   0.817  0.313
 ```
 
 ``` r
@@ -151,13 +151,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name              artist_name        mode  valence energy
-##   <chr>                   <chr>              <chr>   <dbl>  <dbl>
-## 1 Alone Again (Naturally) Gilbert O'Sullivan minor   0.559  0.464
-## 2 Viva La Vida            Coldplay           minor   0.416  0.619
-## 3 Bootylicious            Destiny's Child    minor   0.637  0.835
-## 4 Rock Your Baby          George McCrae      minor   0.943  0.659
-## 5 Crush                   Jennifer Paige     minor   0.626  0.693
+##   track_name                  artist_name        mode  valence energy
+##   <chr>                       <chr>              <chr>   <dbl>  <dbl>
+## 1 Where the Party At          Jagged Edge        minor   0.86   0.661
+## 2 Baby Don't Forget My Number Milli Vanilli      minor   0.846  0.649
+## 3 Eye of the Tiger            Survivor           minor   0.552  0.438
+## 4 Miss You - Remastered       The Rolling Stones minor   0.964  0.521
+## 5 Cheap Thrills               Sia                minor   0.732  0.698
 ```
 
 
@@ -600,35 +600,32 @@ The scatterplot shows song danceability in relation to loudness, colored by temp
 
 
 ``` r
-# lineplot to examine danceability and duration alongside energy and acousticness
-# It seems like a cluster forms with shorter songs that have higher energy, lower acousticness, being more danceable
+# scatterplot to examine danceability and duration alongside energy and acousticness
+
 ggplot(summer_songs, aes(
   x = duration_ms,
   y = danceability,
-  size = acousticness,
-  alpha= 1 - acousticness,
-  color = valence
+  color = acousticness
 )) + 
   geom_point() + 
   #geom_smooth(method="loess", se=FALSE) +
   scale_x_continuous(labels = function(x) x/1000) +
-  scale_size_continuous(range = c(1, 5)) +
   labs(
-    title = "Song Danceability in relation to Duration, colored by Valence",
-    subtitle = "Translucent, larger points are more Acoustic",
+    title = "Song Danceability in relation to Duration, colored by Acousticness",
     x = "Duration (seconds)",
     y = "Danceability",
-    size = "Acousticness",
-    color = "Valence",
+    color = "Acousticness",
     caption = "Source: all_billboard_summer_hits.csv",
-  ) + guides(alpha="none")
+  )
 ```
 
 ![](russo_project_01_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
-This bubble chart was a bit difficult to set up, and was the hardest graph for me to manage. As it is, we can see that there doesn't seem to be a clear relationship between danceability and duration, rather, most points seem to cluster themselves around the 200-250 second range for their duration, with varying degrees of danceability. The points are colored by valence, and each point is sized by their acousticness, and given an alpha value of the complement of their acousticness. This is to prevent more acoustic points from obscuring less acoustic points. In the cluster, there is a varied mix of songs, with the most prominent points having a lower acousticness in general, and varying valence values. To the left of the cluster, we can see a set of points that have a higher acousticness and valence, while to the bottom and bottom-right of the cluster we can see points that have a lower valence and varying amounts of acousticness. The main takeaway from the graph is that to land inside the cluser, we need to make a song somewhere between 200-250 seconds, with a lower acousticness, and a moderate degree of valence.
+Well, while this was **originally** a bubble chart, I revised and simplified this visualization to remove sizing the points based on acousticness, preferring to move the acousticness variable to the color aesthetic, and omitting valence entirely as it's explored in later visualizations. With the points colored by acousticness, we can see a similar pattern to the original visualization, in that duration doesn't seem to impact danceability to a great degree, with most songs landing around the 200-250 second duration range, with varying degrees of danceability. While not included in the final plot, we can verify this with geom_smooth(), as with method=lm there appears to be a weakly positive correlation. However, with method=loess,we can see an uptick in danceability around 200-250 seconds due to most songs being clustered there, with a gradual regression as duration increases.
 
-Another important topic to consider is what key our song should be in, a topic visualized in the bar chart below:
+One area of clarity this scatterplot brings is that in the original bubble chart, I had noticed clusters that were more pronounced than they were in the current scatterplot. A cluster of songs still seems to form around ~220 seconds with a danceability of ~0.7, but we can see here that the acoustic and non-acoustic song clusters seem to overlap each other, with a greater number of acoustic songs being more spread out across duration as opposed to the acoustic songs.
+
+Still, if we want to go with the flow and land within the general cluster of songs, it is most important to make a song with a duration between 200-250 seconds. Acousticness doesn't matter as much as originally thought, but most songs within the 200-250 second range appear to have a lower acousticness, which is something to keep in mind. Another important topic to consider is what key our song should be in, a topic visualized in the bar chart below:
 
 
 ``` r
@@ -703,7 +700,7 @@ Granted, it's a bit more nuanced than that, but the artists that are on this cha
 
   From the annotated visualizations, we can surmise that to have the best chance at a chart topper, we should make a loud, energetic song with a stable tempo to make it more suitable for dancing. The song itself should have a lower acousticness and a duration between 200-250 seconds, with a varying degree of valence depending on the key and mode that we perform it in. If all else fails, we can try to emulate Rihanna or Katy Perry. However, success and fame is often much harder to hack than by boiling down the most popular entries to their base attributes. Songs can resonate with people for different reasons, and it can be argued that by trying to formulate a chart topping song, it could itself be formulaic. Ultimately, the takeaways uncovered in the notebook could be used to make a song that runs counter to them, or to help create a song based on attributes that a songwriter might find personally appealing. At the end of the day, we should make a song that we appreciate and enjoy, and if it overlaps with some of the qualities seen in the top songs then that's a bonus.
 
-  Originally I planned to have a scatterplot, bar chart, and violin plot for this assignment. However, over time I added in more charts such as a bubble chart, a lollipop chart, and replaced a violin plot with a regular boxplot, as the distribution of valence per key was viewable with just a normal boxplot. I knew a scatterplot would be necessary for comparing continuous attributes, and that a bar chart would be needed to show the count of some attributes per key or artist. The bubble chart allowed me to show some of the key attributes for songs in an easier manner, and the lollipop chart served as an easier way to show correlation between all numeric attributes and year.
+  Originally I planned to have a scatterplot, bar chart, and violin plot for this assignment. However, over time I added in more charts such as a bubble chart (revised to be a scatterplot), a lollipop chart, and replaced a violin plot with a regular boxplot, as the distribution of valence per key was viewable with just a normal boxplot. I knew a scatterplot would be necessary for comparing continuous attributes, a bar chart would be needed to show the count of some attributes per key or artist, and the lollipop chart would serve as an easier way to show correlation between all numeric attributes and year.
 
   The story I told was told over the course of the notebook visualizations, which was "how to formulate a chart topping song to get rich and famous in the music industry." Granted, there is a bit more nuance to the story, but we were able to show the qualities that songs possess in the modern day, and what attributes modern music listeners may want from the songs they choose to consume. However, any song we create should be something that we enjoy making and listening to at a baseline, and having it overlap with the most popular attributes is beneficial, but not mandatory. There is no point in a success built without passion or enjoyment.
 
