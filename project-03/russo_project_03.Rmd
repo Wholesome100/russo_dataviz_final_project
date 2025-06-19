@@ -239,8 +239,9 @@ song_sentiment <- lyrics_words %>%
 song_sentiment
 ```
 
-```{r top100-sentiment-interactive}
+```{r top100-sentiment-interactive, MESSAGE = FALSE}
 library(plotly)
+
 g_sent <- ggplot(song_sentiment, aes(
   x = Rank,
   y = sentiment_score,
@@ -259,10 +260,18 @@ g_sent <- ggplot(song_sentiment, aes(
        x="Song Rank",
        color = "Sentiment Score") +
   theme_minimal()
+
+ggsave(
+  filename="../figures/p3-interactive.png",
+  plot = g_sent,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
   
 g_plotly <- ggplotly(g_sent, tooltip = "text")
 
-htmlwidgets::saveWidget(g_plotly, file = "russo_dataviz_final_project/docs/p3-interactive.html", selfcontained = TRUE)
+htmlwidgets::saveWidget(g_plotly, file = "../docs/index.html", selfcontained = TRUE)
 
 g_plotly
 ```

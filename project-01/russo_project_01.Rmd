@@ -229,7 +229,7 @@ Let's visualize the relationship between loudness and year, with energy, in a sc
 
 ```{r}
 # Cell to visualize song loudness over year
-ggplot(summer_songs, aes(
+p1_scatterplot <- ggplot(summer_songs, aes(
   x = year,
   y = loudness
 )) + 
@@ -245,6 +245,16 @@ ggplot(summer_songs, aes(
     color = "Energy"
   ) +
   facet_wrap(~ mode, labeller = as_labeller(c(`minor`="Minor", `major`="Major")))
+
+ggsave(
+  filename="../figures/p1-scatterplot.png",
+  plot = p1_scatterplot,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+p1_scatterplot
 ```
 
 The scatterplot shows loudness across year, with the points colored by energy, and the charts faceted by mode. We can see for songs in Major mode, there has been a consistent increase in loudness over the years, alongside louder songs tending to have a higher energy. For songs in Minor mode, we can see a dip in loudness in the 70s and 80s, before loudness increases throughout the 90s-2010, before beginning to decrease again. This is interesting, and indicates that modern songs are much louder than their older counterparts. Let's visualize loudness in relation to other positively correlated attributes, such as danceability, in the scatterplot below:

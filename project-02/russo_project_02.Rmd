@@ -308,6 +308,7 @@ OK, so now that we have a general idea of what to look for in a club (younger pl
 # Correlogram of player statistics
 # Harder to see on smaller screens, goal kick stats omitted to save space
 
+
 corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
          addCoef.col = "black",
          tl.col = "black", tl.srt = 45,
