@@ -260,6 +260,10 @@ g_sent <- ggplot(song_sentiment, aes(
        color = "Sentiment Score") +
   theme_minimal()
   
-ggplotly(g_sent, tooltip = "text")
+g_plotly <- ggplotly(g_sent, tooltip = "text")
+
+htmlwidgets::saveWidget(g_plotly, file = "russo_dataviz_final_project/docs/p3-interactive.html", selfcontained = TRUE)
+
+g_plotly
 ```
 
