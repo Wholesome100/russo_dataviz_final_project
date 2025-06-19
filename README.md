@@ -23,7 +23,7 @@ In the `project_02/` you can find mini-project-2, where I explored the FIFA 18 P
 **Sample data visualization:** 
 
 _[include your favorite visualization from this project here]_
-<img src="https://github.com/Wholesome100/russo_dataviz_final_project/blob/main/figures/p2-corrplot.png" width="80%" height="80%">
+<img src="https://github.com/Wholesome100/russo_dataviz_final_project/blob/main/figures/p2-corrplot.png" width="100%" height="100%">
 
 (you can place your figures in the `figures/` folder and use the `![](path_to_picture)` option to add the pictures here)
 
@@ -35,7 +35,7 @@ In this project, after completing the mimic plots, I used text visualization on 
 **Sample data visualization:** 
 
 _[include your favorite visualization from this project here]_
-<img src="https://github.com/Wholesome100/russo_dataviz_final_project/blob/main/figures/p3-interactive.png" width="80%" height="80%">
+<img src="https://github.com/Wholesome100/russo_dataviz_final_project/blob/main/figures/p3-interactive.png" width="100%" height="100%">
 
 
 ### Moving Forward
