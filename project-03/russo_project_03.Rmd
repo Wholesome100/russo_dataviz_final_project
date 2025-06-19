@@ -169,9 +169,6 @@ ggplot(tpa_precip, aes(
 
 ## PART 2 
 
-> **You can choose to work on either Option (A) or Option (B)**. Remove from this template the option you decided not to work on.
-
-
 ### Option (A): Visualizing Text Data
 
 Review the set of slides (and additional resources linked in it) for visualizing text data: Week 6 PowerPoint slides of Visualizing Text Data. 
@@ -200,10 +197,69 @@ top_lyrics <- read_csv("https://raw.githubusercontent.com/aalhamadani/dataviz_fi
 top_lyrics
 ```
 
-```{r top100-word-cloud}
+```{r extract-lyrics-words}
+library(tidytext)
 
+lyrics_words <- top_lyrics %>% 
+  unnest_tokens(word, Lyrics) %>% 
+  anti_join(stop_words)
+
+lyrics_words
+```
+
+Below is a wordcloud of the most frequent words that appear in the top 100 billboard songs for 2015.
+*Some explicit words may appear within the cloud due to the unfiltered nature of the dataset.*
+
+```{r top100-word-cloud}
+library(ggwordcloud)
+
+# Count words
+word_counts <- lyrics_words %>% 
+  count(word, sort=TRUE)
+
+# Get top 200 words
+ggplot(word_counts %>% slice_head(n = 200),
+       aes(label = word, 
+          size = n, 
+          color = n)) +
+  geom_text_wordcloud(area_corr = TRUE) +
+  scale_size_area(max_size = 32) +
+  theme_minimal() +
+  labs(title = "Most Frequent Words in Top 100 Billboard Songs (2015)") +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+```{r}
+# Get the sum of afinn scores for each word in a song
+song_sentiment <- lyrics_words %>% 
+  inner_join(get_sentiments("afinn")) %>%
+  group_by(Rank, Song, Artist) %>%
+  summarize(sentiment_score = sum(value))
+
+song_sentiment
 ```
 
 ```{r top100-sentiment-interactive}
-
+library(plotly)
+g_sent <- ggplot(song_sentiment, aes(
+  x = Rank,
+  y = sentiment_score,
+  color = sentiment_score,
+  text = paste("Song:", Song, 
+               "<br>Artist:", Artist, 
+               "<br>Rank:", Rank, 
+               "<br>Sentiment:", sentiment_score
+               )
+  )) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title="AFINN Sentiment Scores of Top 100 Billboard Songs (2015)",
+       caption="Score Obtained from Sum of Lyric-Word Sentiment",
+       y="",
+       x="Song Rank",
+       color = "Sentiment Score") +
+  theme_minimal()
+  
+ggplotly(g_sent, tooltip = "text")
 ```
+
