@@ -13,7 +13,7 @@ In the `project_01/` folder you can find mini-project-1, where I examined the tr
 **Sample data visualization:** 
 
 _[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/echarts.png" width="70%" height="70%">
+<img src="https://github.com/Wholesome100/russo_dataviz_final_project/blob/main/figures/p1-scatterplot.png" width="70%" height="70%">
 
 
 ## Project 02
