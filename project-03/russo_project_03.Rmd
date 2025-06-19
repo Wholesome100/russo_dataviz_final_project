@@ -239,7 +239,7 @@ song_sentiment <- lyrics_words %>%
 song_sentiment
 ```
 
-```{r top100-sentiment-interactive, MESSAGE = FALSE}
+```{r top100-sentiment-interactive, message = FALSE, warning = FALSE}
 library(plotly)
 
 g_sent <- ggplot(song_sentiment, aes(
@@ -261,13 +261,6 @@ g_sent <- ggplot(song_sentiment, aes(
        color = "Sentiment Score") +
   theme_minimal()
 
-ggsave(
-  filename="../figures/p3-interactive.png",
-  plot = g_sent,
-  width = 8,
-  height = 6,
-  dpi = 300
-)
   
 g_plotly <- ggplotly(g_sent, tooltip = "text")
 

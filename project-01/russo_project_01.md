@@ -131,13 +131,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name                                 artist_name    mode  valence energy
-##   <chr>                                      <chr>          <chr>   <dbl>  <dbl>
-## 1 If You Don't Know Me By Now                Simply Red     major   0.213  0.371
-## 2 Poor Little Fool                           Ricky Nelson   major   0.795  0.332
-## 3 I Still Haven't Found What I'm Looking For U2             major   0.587  0.783
-## 4 Buy U a Drank (Shawty Snappin')            T-Pain         major   0.594  0.55 
-## 5 Crystal Blue Persuasion                    Tommy James &… major   0.817  0.313
+##   track_name                                    artist_name mode  valence energy
+##   <chr>                                         <chr>       <chr>   <dbl>  <dbl>
+## 1 That's The Way Love Goes                      Janet Jack… major   0.582  0.7  
+## 2 (Your Love Has Lifted Me) Higher And Higher   Rita Cooli… major   0.643  0.677
+## 3 We Belong Together                            Mariah Car… major   0.778  0.469
+## 4 San Francisco (Be Sure to Wear Flowers In Yo… Scott McKe… major   0.649  0.505
+## 5 Adia                                          Sarah McLa… major   0.251  0.37
 ```
 
 ``` r
@@ -151,13 +151,13 @@ summer_songs %>%
 
 ```
 ## # A tibble: 5 × 5
-##   track_name                  artist_name        mode  valence energy
-##   <chr>                       <chr>              <chr>   <dbl>  <dbl>
-## 1 Where the Party At          Jagged Edge        minor   0.86   0.661
-## 2 Baby Don't Forget My Number Milli Vanilli      minor   0.846  0.649
-## 3 Eye of the Tiger            Survivor           minor   0.552  0.438
-## 4 Miss You - Remastered       The Rolling Stones minor   0.964  0.521
-## 5 Cheap Thrills               Sia                minor   0.732  0.698
+##   track_name                                   artist_name  mode  valence energy
+##   <chr>                                        <chr>        <chr>   <dbl>  <dbl>
+## 1 Boogie Oogie Oogie - Digitally Remastered 99 A Taste Of … minor   0.91   0.522
+## 2 Try Again                                    Aaliyah Tri… minor   0.915  0.841
+## 3 Danger Zone                                  Kenny Loggi… minor   0.647  0.897
+## 4 Cooler Than Me - Single Mix                  Mike Posner  minor   0.625  0.82 
+## 5 Hit 'Em up Style (Oops!)                     Blu Cantrell minor   0.67   0.722
 ```
 
 
@@ -544,7 +544,7 @@ Let's visualize the relationship between loudness and year, with energy, in a sc
 
 ``` r
 # Cell to visualize song loudness over year
-ggplot(summer_songs, aes(
+p1_scatterplot <- ggplot(summer_songs, aes(
   x = year,
   y = loudness
 )) + 
@@ -560,6 +560,22 @@ ggplot(summer_songs, aes(
     color = "Energy"
   ) +
   facet_wrap(~ mode, labeller = as_labeller(c(`minor`="Minor", `major`="Major")))
+
+ggsave(
+  filename="../figures/p1-scatterplot.png",
+  plot = p1_scatterplot,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+``` r
+p1_scatterplot
 ```
 
 ```
