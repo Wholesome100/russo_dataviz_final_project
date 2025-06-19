@@ -45,9 +45,10 @@ ggplot(tpa_dated, aes(
   x = max_temp,
   fill = month_name
 )) +
-  geom_histogram(binwidth = 3, show.legend = FALSE) +
+  geom_histogram(binwidth = 3, show.legend = FALSE, color = "white") +
   labs(x = "Maximum Temperatures",
        y = "Number of Days") +
+  scale_x_continuous(breaks = seq(40, 100, by = 10)) +
   scale_fill_viridis_d() +
   facet_wrap(~ month_name) +
   theme_bw()
@@ -78,7 +79,7 @@ ggplot(tpa_dated, aes(
     x = "Maximum Temperatures",
     y = "Density"
   ) + 
-  theme_bw()
+  theme_minimal()
 ```
 
 
@@ -88,12 +89,6 @@ ggplot(tpa_dated, aes(
 knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/tpa_max_temps_density_facet.png")
 ```
 
-```{r}
-# Cell to check the weirdness with July's density plot
-#tpa_dated %>% filter(tpa_dated$month_name == "July")
-```
-
-
 Hint: default options for `geom_density()` were used. 
 
 ```{r mimic-plot-c}
@@ -101,7 +96,8 @@ ggplot(tpa_dated, aes(
   x = max_temp,
   fill = month_name
 )) +
-  geom_density(linewidth = 1, show.legend = FALSE) +
+  geom_density(linewidth = 1, show.legend = FALSE, alpha = 0.65) +
+  scale_y_continuous(breaks=seq(0, 0.4, by = 0.05)) +
   labs(
     title = "Density Plots for Each Month in 2022",
     x = "Maximum Temperatures",
@@ -132,13 +128,14 @@ ggplot(tpa_dated, aes(
     quantile_lines = TRUE,
     quantiles = 0.5
   ) +
-  scale_fill_viridis_c(option = "plasma") +
+  scale_x_continuous(breaks = seq(40, 100, by = 10)) +
+  scale_fill_viridis_c(option = "plasma", breaks = seq(40, 100, by = 10)) +
   labs(
     y = "",
     x = "Maximum Temperature (in Farenheit Degrees)"
     , fill = ""
   ) +
-  theme_bw()
+  theme_minimal()
 ```
 
 
@@ -155,26 +152,24 @@ tpa_precip
 
 ```{r precipitation-plot-e}
 ggplot(tpa_precip, aes(
-
   x = month_name,
   y = precipitation
 )) +
-  geom_bar(  
-  stat = "identity",
-  fill = "steelblue") +
+  geom_col(fill = "steelblue") +
+  scale_y_continuous(breaks = seq(0.0, 12.5, by = 1.0)) +
   labs(
     title = "Total Precipitation by Month in 2022",
     x = "",
     y = "Precipitation (Inches)"
   ) +
-  theme_bw() +
+  theme_minimal() +
   coord_flip()
 ```
 
 
 ## PART 2 
 
-> **You can choose to work on either Option (A) or Option (B)**. Remove from this template the option you decided not to work on. 
+> **You can choose to work on either Option (A) or Option (B)**. Remove from this template the option you decided not to work on.
 
 
 ### Option (A): Visualizing Text Data
@@ -209,68 +204,6 @@ top_lyrics
 
 ```
 
-```{r top100-bigram-frequency}
-
-```
-
 ```{r top100-sentiment-interactive}
 
 ```
-
-
-### Option (B): Data on Concrete Strength 
-
-Concrete is the most important material in **civil engineering**. The concrete compressive strength is a highly nonlinear function of _age_ and _ingredients_. The dataset used here is from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/index.php), and it contains 1030 observations with 9 different attributes 9 (8 quantitative input variables, and 1 quantitative output variable). A data dictionary is included below: 
-
-
-Variable                      |    Notes                
-------------------------------|-------------------------------------------
-Cement                        | kg in a $m^3$ mixture             
-Blast Furnace Slag            | kg in a $m^3$ mixture  
-Fly Ash                       | kg in a $m^3$ mixture             
-Water                         | kg in a $m^3$ mixture              
-Superplasticizer              | kg in a $m^3$ mixture
-Coarse Aggregate              | kg in a $m^3$ mixture
-Fine Aggregate                | kg in a $m^3$ mixture      
-Age                           | in days                                             
-Concrete compressive strength | MPa, megapascals
-
-
-Below we read the `.csv` file using `readr::read_csv()` (the `readr` package is part of the `tidyverse`)
-
-```{r}
-concrete <- read_csv("../data/concrete.csv", col_types = cols())
-```
-
-
-Let us create a new attribute for visualization purposes, `strength_range`: 
-
-```{r}
-new_concrete <- concrete %>%
-  mutate(strength_range = cut(Concrete_compressive_strength, 
-                              breaks = quantile(Concrete_compressive_strength, 
-                                                probs = seq(0, 1, 0.2))) )
-
-new_concrete 
-```
-
-
-
-1. Explore the distribution of 2 of the continuous variables available in the dataset. Do ranges make sense? Comment on your findings.
-
-2. Use a _temporal_ indicator such as the one available in the variable `Age` (measured in days). Generate a plot similar to the one shown below. Comment on your results.
-
-```{r, echo = FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/concrete_strength.png")
-```
-
-
-3. Create a scatterplot similar to the one shown below. Pay special attention to which variables are being mapped to specific aesthetics of the plot. Comment on your results. 
-
-```{r, echo = FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/cement_plot.png")
-```
-
-
-
-
